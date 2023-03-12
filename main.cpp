@@ -33,7 +33,7 @@ public:
 	virtual void Initialize()
 	{
 		draw_bk=false;						////turn off the default background and use the customized one
-		draw_axes=true;						////if you don't like the axes, turn them off!
+		draw_axes=false;						////if you don't like the axes, turn them off!
 		startTime=clock();
 		OpenGLViewer::Initialize();
 	}
@@ -100,8 +100,8 @@ public:
 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
 		int vn=(int)vertices.size();
 		for(int i=0;i<vn;i++){
-			vertices[i] = Vector3(0.006 * vertices[i][0],0.006 * vertices[i][1],0.006 * vertices[i][2]);
-			vertices[i] += Vector3(0,0,-10);
+			vertices[i] = Vector3(0.004 * vertices[i][0],0.004 * vertices[i][1],0.004 * vertices[i][2]);
+			vertices[i] += Vector3(-1,0,-3);
 		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -149,8 +149,8 @@ public:
 		std::cout << iTime << "Amanda" << std::endl;
 
 		for(int i=0;i<vn;i++){
-			vertices[i] = Vector3(0.008 * vertices[i][0],(0.008 * vertices[i][1]) * sin(iTime +  10.0),-0.008 * vertices[i][2]);
-			vertices[i] += Vector3(-5,0,-5);
+			vertices[i] = Vector3(0.006 * vertices[i][0],0.006 * vertices[i][1],-0.006 * vertices[i][2]);
+			vertices[i] += Vector3(-4,-0.2,-1);
 		}
 		
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -194,7 +194,7 @@ public:
 		int vn=(int)vertices.size();
 		for(int i=0;i<vn;i++){
 			vertices[i] = Vector3(0.007 * vertices[i][0],0.007 * vertices[i][1],-0.007 * vertices[i][2]);
-			vertices[i] += Vector3(3,0,-5);
+			vertices[i] += Vector3(3,-0.5,-1);
 		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -223,6 +223,48 @@ public:
 		return (int)mesh_object_array.size()-1;
 	}
 
+	int Add_Statue()
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		////read mesh file
+		std::string obj_file_name="statue.obj";
+		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
+		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
+		mesh_obj->mesh=*meshes[0];
+
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			vertices[i] = Vector3(0.01 * vertices[i][0],0.01 *  vertices[i][1],-0.01 * vertices[i][2]);
+			vertices[i] += Vector3(-3,0,-5);
+		}
+
+		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
+		////The code for passing the matrix to the shader is in OpenGLMesh.h
+		mesh_obj->model_matrix=
+			glm::mat4(1.f,0.f,0.f,0.f,		////column 0
+					  0.f,1.f,0.f,0.f,		////column 1
+					  0.f,0.f,1.f,0.f,		////column 2
+					  0.f,1.f,0.f,1.f);		////column 3	////set the translation in the last column
+
+		////set up shader
+		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("marble"));
+		
+		////set up texture
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("dolphin_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("dolphin_normal"));
+		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
+		
+		////initialize
+		mesh_obj->Set_Data_Refreshed();
+		mesh_obj->Initialize();	
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
 
 	////this is an example of adding a spherical mesh object generated analytically
 	int Add_Skybox()
@@ -252,7 +294,7 @@ public:
 	}
 
 	////this is an example of adding an object with manually created triangles and vertex attributes
-	int Add_Object_3()
+	int Add_Water()
 	{
 		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 		auto& mesh=mesh_obj->mesh;
@@ -327,8 +369,9 @@ public:
 		Add_Dolphin();
 		Add_Dolphin1();
 		Add_Dolphin2();
+		//Add_Statue();
 		Add_Skybox();
-		Add_Object_3();
+		Add_Water();
 
 		//Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
