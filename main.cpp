@@ -54,6 +54,7 @@ public:
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("object_3.vert","object_3.frag","object_3");	
 
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("skybox.vert","skybox.frag","skybox");	
+		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("dolphin.vert","dolphin.frag","dolphin");
 	}
 
 	void Add_Textures()
@@ -69,6 +70,12 @@ public:
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("sky.jpg", "skybox_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "skybox_normal");
 
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("dolphin_texture.jpg", "dolphin_albedo");		
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "dolphin_normal");
+	
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "boat_normal");
+
+
 	}
 
 	void Add_Background()
@@ -79,22 +86,23 @@ public:
 	}
 
 	////this is an example of adding a mesh object read from obj file
-	int Add_Object_1()
+	int Add_Dolphin()
 	{
 		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 
 		////read mesh file
-		std::string obj_file_name="bunny.obj";
+		std::string obj_file_name="dolphin.obj";
 		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
 		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
 		mesh_obj->mesh=*meshes[0];
 
 		////This is an example showing how to access and modify the values of vertices on the CPU end.
-		//std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
-		//int vn=(int)vertices.size();
-		//for(int i=0;i<vn;i++){
-		//	vertices[i]+=Vector3(1.,0.,0.);
-		//}
+		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			vertices[i] = Vector3(0.006 * vertices[i][0],0.006 * vertices[i][1],0.006 * vertices[i][2]);
+			vertices[i] += Vector3(0,0,-10);
+		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
 		////The code for passing the matrix to the shader is in OpenGLMesh.h
@@ -106,11 +114,11 @@ public:
 
 		////set up shader
 		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
-		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1"));
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("dolphin"));
 		
 		////set up texture
-		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("object_1_albedo"));
-		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("object_1_normal"));
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("dolphin_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("dolphin_normal"));
 		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
 		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
 		
@@ -121,8 +129,95 @@ public:
 		return (int)mesh_object_array.size()-1;
 	}
 
+	int Add_Dolphin1()
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		////read mesh file
+		std::string obj_file_name="dolphin.obj";
+		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
+		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
+		mesh_obj->mesh=*meshes[0];
+
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			vertices[i] = Vector3(0.008 * vertices[i][0],0.008 * vertices[i][1],-0.008 * vertices[i][2]);
+			vertices[i] += Vector3(-5,0,-5);
+		}
+
+		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
+		////The code for passing the matrix to the shader is in OpenGLMesh.h
+		mesh_obj->model_matrix=
+			glm::mat4(1.f,0.f,0.f,0.f,		////column 0
+					  0.f,1.f,0.f,0.f,		////column 1
+					  0.f,0.f,1.f,0.f,		////column 2
+					  0.f,1.f,0.f,1.f);		////column 3	////set the translation in the last column
+
+		////set up shader
+		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("dolphin"));
+		
+		////set up texture
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("dolphin_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("dolphin_normal"));
+		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
+		
+		////initialize
+		mesh_obj->Set_Data_Refreshed();
+		mesh_obj->Initialize();	
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
+
+	int Add_Dolphin2()
+	{
+		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
+
+		////read mesh file
+		std::string obj_file_name="dolphin.obj";
+		Array<std::shared_ptr<TriangleMesh<3> > > meshes;
+		Obj::Read_From_Obj_File_Discrete_Triangles(obj_file_name,meshes);
+		mesh_obj->mesh=*meshes[0];
+
+		////This is an example showing how to access and modify the values of vertices on the CPU end.
+		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+		int vn=(int)vertices.size();
+		for(int i=0;i<vn;i++){
+			vertices[i] = Vector3(0.007 * vertices[i][0],0.007 * vertices[i][1],-0.007 * vertices[i][2]);
+			vertices[i] += Vector3(3,0,-5);
+		}
+
+		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
+		////The code for passing the matrix to the shader is in OpenGLMesh.h
+		mesh_obj->model_matrix=
+			glm::mat4(1.f,0.f,0.f,0.f,		////column 0
+					  0.f,1.f,0.f,0.f,		////column 1
+					  0.f,0.f,1.f,0.f,		////column 2
+					  0.f,1.f,0.f,1.f);		////column 3	////set the translation in the last column
+
+		////set up shader
+		//mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("object_1_shadow"));//Shadow TODO: uncomment this line and comment next line to use shadow shader
+		mesh_obj->Add_Shader_Program(OpenGLShaderLibrary::Get_Shader("dolphin"));
+		
+		////set up texture
+		mesh_obj->Add_Texture("tex_albedo", OpenGLTextureLibrary::Get_Texture("dolphin_albedo"));
+		mesh_obj->Add_Texture("tex_normal", OpenGLTextureLibrary::Get_Texture("dolphin_normal"));
+		Set_Polygon_Mode(mesh_obj,PolygonMode::Fill);
+		Set_Shading_Mode(mesh_obj,ShadingMode::Texture);//SHADOW TODO: set Shading Mode to Shadow
+		
+		////initialize
+		mesh_obj->Set_Data_Refreshed();
+		mesh_obj->Initialize();	
+		mesh_object_array.push_back(mesh_obj);
+		return (int)mesh_object_array.size()-1;
+	}
+
+
 	////this is an example of adding a spherical mesh object generated analytically
-	int Add_Object_2()
+	int Add_Skybox()
 	{
 		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 
@@ -154,7 +249,7 @@ public:
 		auto& mesh=mesh_obj->mesh;
 
 		////vertex position
-		std::vector<Vector3> triangle_vertices={Vector3(-100,-100,-100),Vector3(100,-100,-100),Vector3(-100,-100,100),Vector3(100,-100,100)};
+		std::vector<Vector3> triangle_vertices={Vector3(-10,-1,-10),Vector3(10,-1,-10),Vector3(-10,-1,10),Vector3(10,-1,10)};
 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
 		vertices=triangle_vertices;
 			
@@ -220,8 +315,10 @@ public:
 		Add_Textures();
 
 		//Add_Background();
-		//Add_Object_1();
-		Add_Object_2();
+		Add_Dolphin();
+		Add_Dolphin1();
+		Add_Dolphin2();
+		Add_Skybox();
 		Add_Object_3();
 
 		//Init_Lighting(); ////SHADOW TODO: uncomment this line
