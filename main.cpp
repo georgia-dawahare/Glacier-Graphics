@@ -55,7 +55,6 @@ public:
 
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("skybox.vert","skybox.frag","skybox");	
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("dolphin.vert","dolphin.frag","dolphin");
-		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("marble.vert","marble.frag","marble");
 	}
 
 	void Add_Textures()
@@ -73,6 +72,9 @@ public:
 
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("dolphin_texture.jpg", "dolphin_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "dolphin_normal");
+	
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "boat_normal");
+
 
 	}
 
@@ -123,8 +125,10 @@ public:
 		////initialize
 		mesh_obj->Set_Data_Refreshed();
 		mesh_obj->Initialize();	
+		mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
 		mesh_object_array.push_back(mesh_obj);
 		return (int)mesh_object_array.size()-1;
+		
 	}
 
 	int Add_Dolphin1()
@@ -140,11 +144,15 @@ public:
 		////This is an example showing how to access and modify the values of vertices on the CPU end.
 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
 		int vn=(int)vertices.size();
+
+		float iTime = GLfloat(clock() - startTime) / CLOCKS_PER_SEC;
+		std::cout << iTime << "Amanda" << std::endl;
+
 		for(int i=0;i<vn;i++){
 			vertices[i] = Vector3(0.006 * vertices[i][0],0.006 * vertices[i][1],-0.006 * vertices[i][2]);
 			vertices[i] += Vector3(-4,-0.2,-1);
 		}
-
+		
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
 		////The code for passing the matrix to the shader is in OpenGLMesh.h
 		mesh_obj->model_matrix=
@@ -166,6 +174,7 @@ public:
 		////initialize
 		mesh_obj->Set_Data_Refreshed();
 		mesh_obj->Initialize();	
+		mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
 		mesh_object_array.push_back(mesh_obj);
 		return (int)mesh_object_array.size()-1;
 	}
@@ -209,6 +218,7 @@ public:
 		////initialize
 		mesh_obj->Set_Data_Refreshed();
 		mesh_obj->Initialize();	
+		mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
 		mesh_object_array.push_back(mesh_obj);
 		return (int)mesh_object_array.size()-1;
 	}
@@ -256,8 +266,6 @@ public:
 		return (int)mesh_object_array.size()-1;
 	}
 
-	
-
 	////this is an example of adding a spherical mesh object generated analytically
 	int Add_Skybox()
 	{
@@ -280,6 +288,7 @@ public:
 		////initialize
 		mesh_obj->Set_Data_Refreshed();
 		mesh_obj->Initialize();	
+		mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
 		mesh_object_array.push_back(mesh_obj);
 		return (int)mesh_object_array.size()-1;
 	}
@@ -324,6 +333,7 @@ public:
 		////initialize
 		mesh_obj->Set_Data_Refreshed();
 		mesh_obj->Initialize();	
+		mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
 		mesh_object_array.push_back(mesh_obj);
 		return (int)mesh_object_array.size()-1;
 	}
@@ -355,7 +365,6 @@ public:
 	{
 		Add_Shaders();
 		Add_Textures();
-
 		//Add_Background();
 		Add_Dolphin();
 		Add_Dolphin1();
@@ -366,6 +375,24 @@ public:
 
 		//Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
+	
+	// void Update() {
+	// 	float iTime = GLfloat(clock() - startTime) / CLOCKS_PER_SEC;
+
+	// 	for (auto& mesh_obj : mesh_object_array) {
+	// 		mesh_obj->setTime(GLfloat(clock() - startTime) / CLOCKS_PER_SEC);
+	// 		std::cout << iTime << "Amanda" << std::endl;
+	// 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
+	// 		int vn=(int)vertices.size();
+
+	// 		for(int i=0;i<vn;i++){
+	// 			vertices[i] = Vector3(0.008 * vertices[i][0],(0.008 * vertices[i][1]) * sin(iTime +  10.0),-0.008 * vertices[i][2]);
+	// 			vertices[i] += Vector3(-5,0,-5);
+	// 		}
+	// 	}
+
+		
+	// }
 
 	////Goto next frame 
 	virtual void Toggle_Next_Frame()
@@ -387,6 +414,7 @@ int main(int argc,char* argv[])
 	FinalProjectDriver driver;
 	driver.Initialize();
 	driver.Run();	
+	driver.Toggle_Next_Frame();
 }
 
 #endif
