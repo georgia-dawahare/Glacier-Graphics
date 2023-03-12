@@ -33,7 +33,7 @@ public:
 	virtual void Initialize()
 	{
 		draw_bk=false;						////turn off the default background and use the customized one
-		draw_axes=true;						////if you don't like the axes, turn them off!
+		draw_axes=false;						////if you don't like the axes, turn them off!
 		startTime=clock();
 		OpenGLViewer::Initialize();
 	}
@@ -65,7 +65,7 @@ public:
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_1_normal");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_2_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_2_normal");
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_albedo.png", "object_3_albedo");		
+		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("ocean.jpeg", "object_3_albedo");		
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "object_3_normal");
 
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("sky.jpg", "skybox_albedo");		
@@ -98,8 +98,8 @@ public:
 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
 		int vn=(int)vertices.size();
 		for(int i=0;i<vn;i++){
-			vertices[i] = Vector3(0.006 * vertices[i][0],0.006 * vertices[i][1],0.006 * vertices[i][2]);
-			vertices[i] += Vector3(0,0,-10);
+			vertices[i] = Vector3(0.004 * vertices[i][0],0.004 * vertices[i][1],0.004 * vertices[i][2]);
+			vertices[i] += Vector3(-1,0,-3);
 		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -141,8 +141,8 @@ public:
 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
 		int vn=(int)vertices.size();
 		for(int i=0;i<vn;i++){
-			vertices[i] = Vector3(0.008 * vertices[i][0],0.008 * vertices[i][1],-0.008 * vertices[i][2]);
-			vertices[i] += Vector3(-5,0,-5);
+			vertices[i] = Vector3(0.006 * vertices[i][0],0.006 * vertices[i][1],-0.006 * vertices[i][2]);
+			vertices[i] += Vector3(-4,-0.2,-1);
 		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -185,7 +185,7 @@ public:
 		int vn=(int)vertices.size();
 		for(int i=0;i<vn;i++){
 			vertices[i] = Vector3(0.007 * vertices[i][0],0.007 * vertices[i][1],-0.007 * vertices[i][2]);
-			vertices[i] += Vector3(3,0,-5);
+			vertices[i] += Vector3(3,-0.5,-1);
 		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -227,8 +227,8 @@ public:
 		std::vector<Vector3>& vertices=mesh_obj->mesh.Vertices();
 		int vn=(int)vertices.size();
 		for(int i=0;i<vn;i++){
-			vertices[i] = Vector3(0.01 * vertices[i][0],0.01 *  vertices[i][1],0.01 * vertices[i][2]);
-			//vertices[i] += Vector3(0,0,-10);
+			vertices[i] = Vector3(0.01 * vertices[i][0],0.01 *  vertices[i][1],-0.01 * vertices[i][2]);
+			vertices[i] += Vector3(-3,0,-5);
 		}
 
 		////This is an example of creating a 4x4 matrix for GLSL shaders. Notice that the matrix is column-major (instead of row-major!)
@@ -285,7 +285,7 @@ public:
 	}
 
 	////this is an example of adding an object with manually created triangles and vertex attributes
-	int Add_Object_3()
+	int Add_Water()
 	{
 		auto mesh_obj=Add_Interactive_Object<OpenGLTriangleMesh>();
 		auto& mesh=mesh_obj->mesh;
@@ -360,9 +360,9 @@ public:
 		Add_Dolphin();
 		Add_Dolphin1();
 		Add_Dolphin2();
-		Add_Statue();
+		//Add_Statue();
 		Add_Skybox();
-		//Add_Object_3();
+		Add_Water();
 
 		//Init_Lighting(); ////SHADOW TODO: uncomment this line
 	}
