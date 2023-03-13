@@ -13,17 +13,16 @@ layout (std140) uniform camera
 };
 
 /*uniform variables*/
-uniform float iTime;					////time
-uniform sampler2D tex_albedo;			////texture color
-uniform sampler2D tex_normal;			////texture normal
+uniform float iTime;					// time
+uniform sampler2D tex_albedo;			// texture color
+uniform sampler2D tex_normal;			// texture normal
 uniform float M_PI = 3.14159265;
 
 /*input variables*/
-//// TODO: declare your input variables
-in vec4 vtx_color; //vertex color
+in vec4 vtx_color; 
 in vec3 vtx_pos;
 in vec3 vtx_norm;
-in vec3 vtx_uv; //vertex UV
+in vec3 vtx_uv; 
 in vec4 vtx_tan;
 
 /*output variables*/
@@ -32,13 +31,10 @@ out vec4 frag_color;
 
 void main()							
 {		
-	//float u = (atan(vtx_pos.x, vtx_pos.z)/(2*M_PI)+0.5);
-	//float v = (0.5 - asin(vtx_pos.y)/(M_PI));
 	float rad = 10.0;
 
 	float u = (atan(vtx_pos.x, vtx_pos.z)/(2*M_PI)+0.5);
 	float v = (0.5 - asin(vtx_pos.y / rad)/(M_PI));
-
 	vec2 uv = vec2(u, v);
 	
 	frag_color = texture(tex_albedo, uv);
