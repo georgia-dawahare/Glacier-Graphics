@@ -56,7 +56,6 @@ public:
 
 	void Add_Textures()
 	{
-		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("earth_normal.png", "ocean_normal");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("sky.jpg", "skybox_albedo");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("dolphin_texture.jpg", "dolphin_albedo");
 		OpenGLTextureLibrary::Instance()->Add_Texture_From_File("ocean.jpeg", "ocean_albedo");
@@ -118,7 +117,6 @@ public:
 
 		// set up texture
 		mesh_obj->Add_Texture("ocean_albedo", OpenGLTextureLibrary::Get_Texture("ocean_albedo"));
-		mesh_obj->Add_Texture("ocean_normal", OpenGLTextureLibrary::Get_Texture("ocean_normal"));
 		Set_Polygon_Mode(mesh_obj, PolygonMode::Fill);
 		Set_Shading_Mode(mesh_obj, ShadingMode::Texture);
 
