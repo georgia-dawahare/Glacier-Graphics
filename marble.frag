@@ -13,9 +13,9 @@ layout (std140) uniform camera
 };
 
 /*uniform variables*/
-uniform float iTime;					////time
-uniform sampler2D tex_albedo;			////texture color
-uniform sampler2D tex_normal;			////texture normal
+uniform float iTime;					// time
+uniform sampler2D tex_albedo;			// texture color
+uniform sampler2D tex_normal;			// texture normal
 
 const float PI = 3.14;
 
@@ -29,7 +29,7 @@ in vec4 vtx_tan;
 
 vec2 hash2(vec2 v)
 {
-	vec2 rand = vec2(dot(v,vec2(127.1,311.7)),dot(v,vec2(269.5,183.3))); //from the book of shaders
+	vec2 rand = vec2(dot(v,vec2(127.1,311.7)),dot(v,vec2(269.5,183.3))); // from the book of shaders
 	rand = -1.0 + 2.0*fract(sin(rand)*43758.5453123);
 
 	return rand;
@@ -39,24 +39,24 @@ float perlin_noise(vec2 v)
 {
 	float noise = 0;
 
-	vec2 i = floor(v); //integer part
-    vec2 f = fract(v); //fractional part
+	vec2 i = floor(v); // integer part
+    vec2 f = fract(v); // fractional part
 
-    //vec2 m = f*f*(3.0-2.0*f); //same a smoothstep, hermine gradient
 	vec2 m = smoothstep(0.,1.,f);
 
-    noise = mix( mix( dot( hash2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
-                     dot( hash2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), m.x),
-                mix( dot( hash2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
-                     dot( hash2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), m.x), m.y);
+    noise = mix(mix(dot( hash2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                    dot( hash2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), m.x),
+                mix(dot( hash2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                    dot( hash2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), m.x), m.y);
 
 	return noise;
 }
 
+// Generate marble pattern
 float t(vec2 uv )
 {
     float
-     value = perlin_noise(uv / 64.) * 10000.;
+    value = perlin_noise(uv / 64.) * 10000.;
     value += perlin_noise(uv / 32.) * 10000.;
     value += perlin_noise(uv / 16.) * 10000.;
     value += perlin_noise(uv / 8.) * 8.;
@@ -70,12 +70,7 @@ float t(vec2 uv )
 
 void main()							
 {		
-	//frag_color = texture(tex_albedo, uv);
-	//vec3 color = 0.5 + 0.5 * (noiseOctave(vtx_pos.xy, 6))  * vec3(1,1,1); // visualize perlin noise
-	//vec3 color = 0.5 + 0.5 * (perlin_noise(vtx_pos.xy))  * vec3(1,1,1);  //for testing with just perlin noise
-
     vec2 uv2 = vtx_pos.xy*.1;
-
     float v=0.5+0.5*sin(uv2.x+uv2.y+t(uv2));
 	frag_color = vec4(v+.01,v,v,1.0);
 }	
